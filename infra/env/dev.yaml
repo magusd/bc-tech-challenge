@@ -1,0 +1,56 @@
+redis:
+  replica:
+    replicaCount: 1
+image:
+  repository: unclelobs/bluecore-counter
+  # tag: ""
+
+env:
+  - name: REDIS_HOST
+    value: bluecore-counter-redis-master.bluecore-counter.svc.cluster.local
+  - name: REDIS_PORT
+    value: "6379"
+  # - name: REDIS_PASSWORD #secret mounted as env var
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  port: 3000
+
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+    cert-manager.io/cluster-issuer: letsencrypt-issuer
+  hosts:
+    - host: counter.dev.bluecore.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - counter.dev.bluecore.com
+      secretName: counter-tls-secret
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80

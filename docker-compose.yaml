@@ -1,0 +1,32 @@
+services:
+  api:
+    image: ${DOCKER_IMAGE:-unclelobs/bluecore-counter}:${DOCKER_TAG:-latest}
+    build:
+      context: ./src
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=foobar123
+    working_dir: /app
+    volumes:
+      - ./src:/app
+    
+    #QoL: auto reload exists if the app crashes, so we loop.
+    command: sh -c 'while true; do fastapi dev main.py --host 0.0.0.0 --port 3000; sleep 3; done'
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    networks:
+      - bluecore-dev-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - bluecore-dev-network
+    command: redis-server --requirepass foobar123 
+
+networks:
+  bluecore-dev-network:

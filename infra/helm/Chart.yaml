@@ -1,0 +1,14 @@
+apiVersion: v2
+name: bluecore-counter
+description: A Helm chart for BlueCore's Platform Engineer technical challenge
+
+type: application
+
+version: 0.1.0
+
+appVersion: "0.1.99"
+
+dependencies:
+  - name: redis
+    version: 21.2.0
+    repository: oci://registry-1.docker.io/bitnamicharts
