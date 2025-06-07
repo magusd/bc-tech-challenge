@@ -31,9 +31,8 @@ def increment_counter():
 
 @app.get("/healthz", response_class=HTMLResponse)
 def healthz():
-    return HTMLResponse("<h1>OK</h1>")
     try:
         r.ping()
     except redis.ConnectionError:
         raise HTTPException(status_code=500, detail="Can't connect to Redis")
-    return "healthy"
+    return HTMLResponse("<h1>OK</h1>")
