@@ -39,8 +39,6 @@ kubectl get secret bluecore-regcred -n "$NAMESPACE" || \
 echo "Ensuring we have the redis password"
 export REDIS_PASSWORD=$(kubectl get secret --namespace "bluecore-counter" bluecore-counter-redis -o jsonpath="{.data.redis-password}" | base64 -d || echo "")
 
-echo "REDIS_PASSWORD: $REDIS_PASSWORD"
-
 helm dependencies build ./infra/helm
 helm upgrade --install \
     --wait --timeout 10m \
