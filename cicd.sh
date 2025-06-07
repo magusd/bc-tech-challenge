@@ -4,6 +4,12 @@ echo ":::Step 1: Login to Docker Registry:::"
 CR_USER=${CR_USER:-"unclelobs"}
 CR_HOST=${CR_HOST:-"https://index.docker.io/v1/"}
 CR_PASS=${CR_PASS:-""}
+
+if [ -z "$CR_PASS" ]; then
+    echo "Error: CR_PASS is not set. Please set the CR_PASS environment"
+    exit 1
+fi
+
 docker login $CR_HOST \
     --username $CR_USER \
     --password $CR_PASS
